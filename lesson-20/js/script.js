@@ -16,17 +16,6 @@ const todoController = {
             obj[input.name] = input.value;
         }
         return obj;
-    },
-    cleanData() {
-        localStorage.clear();
-        // localStorage.setItem(todoModel.dbName, JSON.stringify(arr));
-        todoModel.saveData(arr);
-        this.template.textContent = '';
-        todoView.onLoadFunc(); 
-    },
-    foundElemArr() {
-          let index = Number(boxCheck.target.parentElement.id);
-          let arr = todoController.getData();
     }
 }
 
@@ -44,7 +33,6 @@ const todoModel = {
         }
         todoItem.checkbox = false;
         todoItem.completed = 'false';
-        // console.log(todoItem);
         const data = [todoItem];
       
         localStorage.setItem(this.dbName, JSON.stringify(data));
@@ -59,7 +47,6 @@ const todoModel = {
 const todoView = {
     form: document.querySelector('#todoForm'),
     template: document.querySelector('#todoItems'),
-    
 
     setEvents() {
         window.addEventListener('load', this.onLoadFunc.bind(this));
@@ -82,32 +69,57 @@ const todoView = {
     },
     onLoadFunc() {
         num = 0;
-        console.log(todoController.getData());
         todoController.getData().forEach(item => this.renderItem(item));
     },
-    checkBoxFunc(boxCheck) {      
-        todoController.foundElemArr();   
+    checkBoxFunc(boxCheck) {
+//controller         
+        let index = Number(boxCheck.target.parentElement.id);
+        let arr = todoController.getData();
         arr[index].completed = 'true';
-        arr[index].checkbox = !arr[index].checkbox;       
-        todoController.cleanData();    
+        arr[index].checkbox = !arr[index].checkbox;
+//model
+        localStorage.clear();
+        localStorage.setItem(todoModel.dbName, JSON.stringify(arr));
+//view
+        this.template.textContent = '';
+        todoView.onLoadFunc();
+
     },
     deletElemFunc(elemDel) {
+        
+        
         if (elemDel.target.className === 'taskButton') {
-            todoController.foundElemArr();
+//controller            
+            let index = Number(elemDel.target.parentElement.id);
+            let arr = todoController.getData();
             arr.splice(index, 1);
-            todoController.cleanData();
-        }          
+//model
+            localStorage.clear();
+            localStorage.setItem(todoModel.dbName, JSON.stringify(arr));
+//view
+            this.template.innerHTML = '';
+            todoView.onLoadFunc();
+        }
+            
     },
     deletAllFunc(delAll) {
        
         if (delAll.target.className === 'taskdeleteAll') {
-             num = 0;
-             todoController.foundElemArr();       
-             todoController.cleanData();
+//controller             
+            num = 0;
+            console.log(delAll.target);
+            let arr = todoController.getData();
+//model
+            localStorage.setItem(todoModel.dbName, JSON.stringify(arr));
+//view
+            this.template.innerHTML = '';
+            localStorage.clear();
+              
+              
         }
     },
-    createTemplate(titleText = '', descriptionText = '', completedText = '', checkboxTick = false, buttonText = 'Delete element', deleteAllText = 'Delete all') {
-        
+    createTemplate(titleText = '', descriptionText = '', completedText = '', checkboxTick=false, buttonText = 'Delete element', deleteAllText = 'Delete all') {
+
         const mainWrp = document.createElement('div');
         
         mainWrp.className = 'col-4';
@@ -154,37 +166,20 @@ const todoView = {
         
         const template = this.createTemplate(title, description, completed, checkbox);
         document.querySelector('#todoItems').prepend(template);
+
     }
 }
 
 
 
-
-todoView.createTemplate();
-
-
 //— Добавить к каждому todo item который создается при сабмите формы поле completed
-
 //— поле completed должно содержать false когда пользователь только что создал todo item
-
 //— Поле completed можно изменить прямо из элемента todo http://joxi.ru/GrqX0JLf4v1Y5A — нужно добавить в него checkbox
-
 //— Если задача не выполнена — нежно чтобы в чекбоксе не было галочки, а если выполнена — чтобы была (сразу после создания todo item галочки нету)
-
 //— Если пользователь нажимает на текущем элементе на галочку то нужно изменять статус текущей задачи на выполненный (completed: true)
-
 //— Так как все todo items у нас хранятся в массиве внутри localStorage то с ним нам и нужно работать
-
 //— Добавить возможность удалять каждый отдельный todo item
-
 //— Добавить возможность удалять сразу все todo items
-
-
-
-
-
-
-
 todoView.setEvents();
 
 
